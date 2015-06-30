@@ -2,33 +2,44 @@ package ph.sitedo;
 
 import java.util.Calendar;
 
-import static ph.sitedo.Cargo.*;
-
 enum Cargo {
-		DESENVOLVEDOR,
-		DBA,
-		TESTER
+		DESENVOLVEDOR(new DezOuVintePorCento()),
+		DBA(new QuinzeOuVintePorCento()),
+		TESTER(new QuinzeOuVintePorCento());
+
+		private RegraDeCalculo regra;
+
+		Cargo(RegraDeCalculo regra) {
+
+				this.regra = regra;
+		}
+
+		public RegraDeCalculo getRegra() {
+
+				return regra;
+		}
+
+}
+
+interface RegraDeCalculo {
+
+		double calcula(Funcionario funcionario);
 }
 
 /**
- * Created by Paulo Henrique on 29/06/2015.
+ * Created by PauloHenrique on 29/06/2015.
  */
 public class CalculadoraDeSalario {
 
 		public double calcula(Funcionario funcionario) {
 
-				if (DESENVOLVEDOR.equals(funcionario.getCargo())) {
-						return dezOuVintePorcento(funcionario);
-				}
-
-				if (DBA.equals(funcionario.getCargo()) || TESTER.equals(funcionario.getCargo())) {
-						return quinzeOuVinteCincoPorcento(funcionario);
-				}
-
-				throw new RuntimeException("funcionario invalido");
+				return funcionario.calculaSalario();
 		}
+}
 
-		private double dezOuVintePorcento(Funcionario funcionario) {
+class DezOuVintePorCento implements RegraDeCalculo {
+
+		public double calcula(Funcionario funcionario) {
 
 				if (funcionario.getSalarioBase() > 3000.0) {
 						return funcionario.getSalarioBase() * 0.8;
@@ -36,8 +47,11 @@ public class CalculadoraDeSalario {
 						return funcionario.getSalarioBase() * 0.9;
 				}
 		}
+}
 
-		private double quinzeOuVinteCincoPorcento(Funcionario funcionario) {
+class QuinzeOuVintePorCento implements RegraDeCalculo {
+
+		public double calcula(Funcionario funcionario) {
 
 				if (funcionario.getSalarioBase() > 2000.0) {
 						return funcionario.getSalarioBase() * 0.75;
@@ -45,7 +59,6 @@ public class CalculadoraDeSalario {
 						return funcionario.getSalarioBase() * 0.85;
 				}
 		}
-
 }
 
 class Funcionario {
@@ -106,4 +119,8 @@ class Funcionario {
 				this.salarioBase = salarioBase;
 		}
 
+		public double calculaSalario() {
+
+				return this.getCargo().getRegra().calcula(this);
+		}
 }
