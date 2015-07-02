@@ -1,4 +1,4 @@
-package ph.sitedo;
+package ph.sitedo.aula2;
 
 import org.junit.Test;
 
